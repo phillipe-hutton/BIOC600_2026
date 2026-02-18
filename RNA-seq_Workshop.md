@@ -197,6 +197,56 @@ module load samtools/1.17
 samtools index *_Aligned.sortedByCoord.out.bam
 ```
 
+```
+#!/bin/bash
+#SBATCH --job-name=bigwig
+#SBATCH --time=1:00:00
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=20G
+#SBATCH --output=bigwig_%A_%a.out
+#SBATCH --array=1-4
+
+# -----------------------------
+# Directories and Files
+# -----------------------------
+
+SAMPLES_FILE=samples.txt
+
+# -----------------------------
+# Setup Array
+# -----------------------------
+
+# Read the sample name for this array index
+SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" ${SAMPLES_FILE})
+
+# -----------------------------
+# Modules
+# -----------------------------
+
+module load python/3.5.6
+
+# -----------------------------
+# Activate Virtual Environment
+# -----------------------------
+
+source ~/virtual_envs/deepTools_env/bin/activate
+
+# -----------------------------
+# Convert BAM to bigWig
+# -----------------------------
+
+bamCoverage -b ${SAMPLE}_Aligned.sortedByCoord.out.bam \
+            --normalizeUsing CPM \
+            -bs 20 \
+            --smoothLength 60 \
+            --numberOfProcessors 4 \
+            -of bigwig \
+            -o ${SAMPLE}.bw
+
+# Deactivate Virtual Environment
+deactivate
+```
+
 ## VI. Counting Your Aligned Reads
 ```
 #!/bin/bash
