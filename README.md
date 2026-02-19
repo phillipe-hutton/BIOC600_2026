@@ -48,6 +48,7 @@ I encourage you to read through the workshop material in advance so that you are
 We look forward to seeing you at the first workshop!
 
 Phillipe Hutton & Ishtiaque Hossain
+
 [phillipe.hutton@mcgill.ca](phillipe.hutton@mcgill.ca)
+
 [ishtiaque.hossain@mcgill.ca](ishtiaque.hossain@mcgill.ca)
-BIOC600 TAs
