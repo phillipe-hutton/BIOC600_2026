@@ -34,18 +34,22 @@ To get started, you will need to download:
 - [Visual Studio Code](https://code.visualstudio.com/Download)
 - [R Studio and R](https://posit.co/download/rstudio-desktop/)
 
-Next, you will need to create an account by clicking the following [link]().
+Optionally, you can create a GitHub account which will allow you to have GitHub CoPilot be available on VSCode and R Studio. There is a paid plan, but the free plan should be more than sufficient for your coding tasks. GitHub CoPilot functions as an AI autocomplete for writing scripts and it will significantly increase your speed for writing scripts. To enable GitHub CoPilot, do the following steps:
+
+- VS Code: 
+
+Next, you will need to create an account by clicking the following [link](https://ipa.bioc600.calculquebec.cloud/ipa/ui/).
 
 Once you have done all this, you will then [email me](phillipe.hutton@mcgill.ca) to let me know that you have successfully created your account.
 
 I encourage you to read through the workshop material in advance so that you are prepared for the day of the workshop. We will go in the following order:
 
-1. Bash and the Unix Environment
+1. Bash, Unix, and HPC
 2. R and R Studio
 3. RNA-seq Analysis
 4. ChIP-seq Analysis
 
-We look forward to seeing you at the first workshop!
+Focus on 1 and 2 at the beginning as this is the content that people tend to struggle with at the beginning. We look forward to seeing you at the first workshop!
 
 Phillipe Hutton & Ishtiaque Hossain
 
