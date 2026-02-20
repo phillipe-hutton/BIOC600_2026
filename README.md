@@ -30,18 +30,23 @@ Between the second and third workshop, you will conduct analysis of your project
 
 The grade will be based 50% on the presentation itself (how well you explained scientific background, why you conducted analysis you did) and 50% on completion and quality of the bioinformatic analysis.
 
-To get started, you will need to download:
+To get started, you will need to download the following Integrated Development Environments (IDEs):
 
 - [Visual Studio Code](https://code.visualstudio.com/Download)
-- [R Studio and R](https://posit.co/download/rstudio-desktop/)
+- [R Studio and R](https://posit.co/download/rstudio-desktop/) (Download both R and R Studio)
 
-Optionally, you can create a GitHub account which will allow you to have GitHub CoPilot be available on VSCode and R Studio. There is a paid plan, but the free plan should be more than sufficient for your coding tasks. GitHub CoPilot functions as an AI autocomplete for writing scripts and it will significantly increase your speed for writing scripts. To enable GitHub CoPilot, do the following steps:
+Optionally, you can create a GitHub account which will allow you to have GitHub CoPilot be available on VSCode and R Studio. **Do not get the paid plan**—the free plan should be more than sufficient for your coding tasks. GitHub CoPilot functions as an AI autocomplete for writing scripts and it will significantly increase your speed for writing scripts. To enable GitHub CoPilot, do the following steps:
 
 - VS Code: Add the "GitHub Copilot Chat" Extension and sign in to your GitHub account to enable the extension.
-- R Studio: Open RStudio and navigate to Tools > Global Options > Copilot to enable Copilot.
+- R Studio: Open RStudio and navigate to Tools > Global Options > Copilot and sign in to enable GitHub Copilot.
 
-![](<img width="945" height="423" alt="github-copilot-privacy-settings" src="https://github.com/user-attachments/assets/1256e71a-3eb5-4cc8-ba9b-678e816265b4" />
-)
+Note that the usage of Copilot, as with other AI tools, should be done with caution. Check your privacy settings and be cautious about entering sensitive data into IDEs with Copilot enabled. I recommend setting your privacy settings as shown in the image below to ensure that your code won't be used for training AI models.
+
+---
+![github-copilot-privacy-settings](https://github.com/user-attachments/assets/7f859dc9-6f87-4c44-9202-faa8d65fe753)
+---
+
+Additionally, I advise that this tool should be used as an advanced "autocomplete" like when you text your friends: It's handy when it gives you the response that you're looking for—but it won't always give you the response that you actually want to use. So always check your scrips to make sure there's no errors in it.
 
 I encourage you to read through the workshop material in advance so that you are prepared for the day of the workshop. We will go in the following order:
 
