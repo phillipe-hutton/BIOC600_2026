@@ -40,7 +40,7 @@ Optionally, you can create a GitHub account which will allow you to have GitHub 
 - VS Code: Add the "GitHub Copilot Chat" Extension and sign in to your GitHub account to enable the extension.
 - R Studio: Open RStudio and navigate to Tools > Global Options > Copilot to enable Copilot.
 
-![github-copilot-privacy-settings](<img width="945" height="423" alt="github-copilot-privacy-settings" src="https://github.com/user-attachments/assets/1256e71a-3eb5-4cc8-ba9b-678e816265b4" />
+![](<img width="945" height="423" alt="github-copilot-privacy-settings" src="https://github.com/user-attachments/assets/1256e71a-3eb5-4cc8-ba9b-678e816265b4" />
 )
 
 I encourage you to read through the workshop material in advance so that you are prepared for the day of the workshop. We will go in the following order:
