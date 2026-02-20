@@ -1,4 +1,5 @@
 # Welcome to the BIOC 600 Bioinformatics Workshop!
+
 Within this GitHub repository, you will find all the information and resources you will need to successfully complete the workshop sections of BIOC 600.
 
 The first workshop will cover RNA-seq analysis. By the end of this workshop, you will be able to:
@@ -16,7 +17,7 @@ The second workshop will cover ChIP-seq analysis. By the end of this workshop, y
 - Align raw sequencing files from a ChIP-seq experiment to a reference genome
 - Filter mapped reads to remove PCR duplicates and low quality/unmapped reads
 - Visualize ChIP peaks on a genome browswer
-- Identify peaks using the macs2 callpeaks function
+- Identify peaks using the MACS2 callpeaks function
 - Use Homer to identify motifs for transcription factors that are enriched in your ChIP peaks
 
 Between the first and second workshop, you will select and download either a ChIP-seq or an RNA-seq dataset that is relevant to your area of research. This should correspond to a complete experiment (e.g. a ChIP and a control, RNA-seq in two different conditions). It can be data from your own research lab, in which case you will need to be able to obtain relevant fastq files from your research lab, or from a published manuscript provided it has been deposited on the GEO database.
@@ -36,11 +37,11 @@ To get started, you will need to download:
 
 Optionally, you can create a GitHub account which will allow you to have GitHub CoPilot be available on VSCode and R Studio. There is a paid plan, but the free plan should be more than sufficient for your coding tasks. GitHub CoPilot functions as an AI autocomplete for writing scripts and it will significantly increase your speed for writing scripts. To enable GitHub CoPilot, do the following steps:
 
-- VS Code: 
+- VS Code: Add the "GitHub Copilot Chat" Extension and sign in to your GitHub account to enable the extension.
+- R Studio: Open RStudio and navigate to Tools > Global Options > Copilot to enable Copilot.
 
-Next, you will need to create an account by clicking the following [link](https://ipa.bioc600.calculquebec.cloud/ipa/ui/).
-
-Once you have done all this, you will then [email me](phillipe.hutton@mcgill.ca) to let me know that you have successfully created your account.
+![github-copilot-privacy-settings](<img width="945" height="423" alt="github-copilot-privacy-settings" src="https://github.com/user-attachments/assets/1256e71a-3eb5-4cc8-ba9b-678e816265b4" />
+)
 
 I encourage you to read through the workshop material in advance so that you are prepared for the day of the workshop. We will go in the following order:
 
@@ -53,6 +54,4 @@ Focus on 1 and 2 at the beginning as this is the content that people tend to str
 
 Phillipe Hutton & Ishtiaque Hossain
 
-[phillipe.hutton@mcgill.ca](phillipe.hutton@mcgill.ca)
-
-[ishtiaque.hossain@mcgill.ca](ishtiaque.hossain@mcgill.ca)
+BIOC 600 TAs
