@@ -11,5 +11,29 @@ Given that the human genome contains approximately 3 billion base pairs and the 
 
 For this workshop, you will be working on a temporary virtual cluster provided by Calcul Québec.
 
-# Bash and Unix
+There are two ways to login to a HPC:
+
+1. Using a secure shell (ssh) (recommended)
+2. Using JupyterHub via a web browser
+
+## Bash and Unix
 The **<ins>B</ins>ourne <ins>A</ins>gain <ins>S</ins>hell** (Bash) is a Unix shell that allows you to work with the operating system of a computer. HPC clusters run almost exclusively on Linux (which is similar to Unix). So, to be able to work with HPC computers, you will need to learn some Bash.
+
+Here is a cheat sheet of common Bash commands and what they do:
+
+| Command | Function |
+| ------- | -------- |
+| cd pathway_to_directory | Changes the working directory |
+| cd .. | Go back one directory |
+| ls | List the contents of a directory |
+| ls -all | List all the contents of a directory + info |
+| nano filename | Open a new or existing file and edit it |
+| less filename | Open a file but you can't edit it |
+| cp | Copy paste a file |
+| mv | Move a file from one directory to another |
+| wget | Download a file from a web link |
+| bash | Run a bash script |
+| sbatch | Submit a script on a job scheduler |
+| module avail | See what software is available to use |
+| module load | Load software |
+| module purge | Unloads all software |
