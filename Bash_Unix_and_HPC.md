@@ -32,6 +32,8 @@ Here is a cheat sheet of common Bash commands and what they do:
 | ------- | -------- |
 | mkdir | Make a new directory |
 | mkdir -p | Make a new directory including parent directory |
+| rm | Delete file |
+| rm -r | Delete directory including contents |
 | cd | Changes the working directory |
 | cd .. | Go back one directory |
 | ls | List the contents of a directory |
@@ -41,6 +43,13 @@ Here is a cheat sheet of common Bash commands and what they do:
 | cp | Copy paste a file |
 | mv | Move a file from one directory to another |
 | wget | Download a file from a web link |
+| gzip | Compress a single file |
+| gunzip | Decompress a single file |
+| chmod u+x | Give the user execute permission |
+| chmod +x | Give everybody execute permission |
+| which | Use to find what version software is loaded |
+| grep | Find in files |
+| sed | Replace in files |
 | bash | Run a bash script |
 | sbatch | Submit a script on a job scheduler |
 | module avail | See what software is available to use |
