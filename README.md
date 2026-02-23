@@ -55,7 +55,7 @@ I encourage you to read through the workshop material in advance so that you are
 3. RNA-seq Analysis
 4. ChIP-seq Analysis
 
-Focus on 1 and 2 at the beginning as this is the content that people tend to struggle with at the beginning. We look forward to seeing you at the first workshop!
+Focus on 1 and 2 at the beginning as this is the content that people tend to struggle with at first. We look forward to seeing you at the first workshop!
 
 Phillipe Hutton & Ishtiaque Hossain
 
