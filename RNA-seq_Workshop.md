@@ -196,6 +196,28 @@ fastp -i "${INPUT_R1}" \
 -j "${JSON_REPORT}"
 ```
 
+We will create a samples.txt file using the `nano` text editor. Create this txt file in your *hfd-rna* directory: `nano samples.txt`
+
+```
+chow_rep1_rna
+chow_rep2_rna
+hfd_rep1_rna
+hfd_rep2_rna
+```
+
+Create your trimming bash script: `nano fastp.sh` and paste in your fastp script.
+
+To submit the job to the Slurm job scheduler, type in `sbatch fastp.sh` and hit enter. You will be able to track your progress using the `sq` command.
+
+If you run into any issues with a job, you can enter `sacct -j <job_id> --format=JobID,JobName,Partition,Account,AllocCPUS,State,ExitCode,Elapsed,MaxRSS` and you will receive the error codes for the submitted jobs to get an idea of what when wrong. You should also look at your logs directory to see the .out and .err files for your corresponding jobs for further troubleshooting.
+
+To view the report, login to the HPC cluster using JupyterHub, go to the trim directory, and open the html files. The report will look like this:
+
+![Fastp Report #1](https://github.com/user-attachments/assets/e46c99fc-526a-4314-a9dd-9ccf73ee56cc)
+
+![Fastp Report #2](https://github.com/user-attachments/assets/a384611d-4aca-4cd3-a94d-4d1f5c3d5b55)
+
+![Fastp Report #3](https://github.com/user-attachments/assets/72fa916b-b9f7-4882-af11-66dfc9c6abe1)
 
 
 ## III. Aligning Reads to a Reference Genome
@@ -203,7 +225,7 @@ fastp -i "${INPUT_R1}" \
 #!/bin/bash
 #SBATCH --job-name=align
 #SBATCH --time=4:00:00
-#SBATCH --mem=50G
+#SBATCH --mem=64G
 #SBATCH --cpus-per-task=4
 #SBATCH --output=/home/phutton/scratch/hfd-rna/logs/align_%A_%a.out
 #SBATCH --error=/home/phutton/scratch/hfd-rna/logs/align_%A_%a.err
@@ -214,7 +236,7 @@ fastp -i "${INPUT_R1}" \
 # ------------------------------
 
 SAMPLES_FILE=~/scratch/hfd-rna/samples.txt
-REF_GENOME_DIR=/home/phutton/scratch/genomes/star_mm10 # keep as this to access my indexed genome
+REF_GENOME_DIR=~/projects/def-sponsor00/phutton/genomes/star_mm10 # keep as this to access my indexed genome
 INPUT_DIR=~/scratch/hfd-rna/fastq/trim
 OUTPUT_DIR=~/scratch/hfd-rna/align
 
