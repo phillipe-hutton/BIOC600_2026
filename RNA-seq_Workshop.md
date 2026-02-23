@@ -228,12 +228,19 @@ To view the report, login to the HPC cluster using JupyterHub, go to the trim di
 
 
 ## III. Aligning Reads to a Reference Genome
+
+Before we can align reads to a reference genome, we must first index our reference genome so that the STAR software can work with it. **For the sake of time, we have already prepared an indexed genome for the mouse mm10 reference genome that you can use**.
+
+If you require a reference genome for a difference organism, you can do the following:
+
+Go to the UCSC Genome Browser
+
 ```
 #!/bin/bash
 #SBATCH --job-name=align
 #SBATCH --time=1:00:00
-#SBATCH --mem=64G
-#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=7G
+#SBATCH --cpus-per-task=8 # Total memory will be 8 CPUs * 7G = 56G —— star is memory intensive
 #SBATCH --output=/home/phutton/scratch/hfd-rna/logs/align_%A_%a.out
 #SBATCH --error=/home/phutton/scratch/hfd-rna/logs/align_%A_%a.err
 #SBATCH --array=1-4%2 # limit to 2 concurrent jobs to manage memory usage
@@ -267,7 +274,7 @@ module load star/2.7.11b
 # ------------------------------
 
 STAR --runMode alignReads \
-     --runThreadN 4 \
+     --runThreadN 8 \
      --genomeDir ${REF_GENOME_DIR} \
      --readFilesIn ${INPUT_DIR}/${SAMPLE}_R1_trimmed.fastq.gz ${INPUT_DIR}/${SAMPLE}_R2_trimmed.fastq.gz \
      --readFilesCommand zcat \
