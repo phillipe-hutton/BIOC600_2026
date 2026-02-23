@@ -213,23 +213,30 @@ If you run into any issues with a job, you can enter `sacct -j <job_id> --format
 
 To view the report, login to the HPC cluster using JupyterHub, go to the trim directory, and open the html files. The report will look like this:
 
-![Fastp Report #1](https://github.com/user-attachments/assets/e46c99fc-526a-4314-a9dd-9ccf73ee56cc)
+![Fastp Report: Summary](https://github.com/user-attachments/assets/d8d0afa0-375c-4b8b-8d4a-ab0b38eed7a8)
 
-![Fastp Report #2](https://github.com/user-attachments/assets/a384611d-4aca-4cd3-a94d-4d1f5c3d5b55)
+![Fastp Report: Adapters](https://github.com/user-attachments/assets/f9fc8031-ead5-4425-bc00-2b65f4a92916)
 
-![Fastp Report #3](https://github.com/user-attachments/assets/72fa916b-b9f7-4882-af11-66dfc9c6abe1)
+![Fastp Report: Insert Size](https://github.com/user-attachments/assets/ef66dadd-603c-48b8-95c9-cec756809084)
+
+![Fastp Report: Filtering Stats](https://github.com/user-attachments/assets/697601f3-4c17-494a-91e2-8f51487dba0c)
+
+
+
+
+
 
 
 ## III. Aligning Reads to a Reference Genome
 ```
 #!/bin/bash
 #SBATCH --job-name=align
-#SBATCH --time=4:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mem=64G
 #SBATCH --cpus-per-task=4
 #SBATCH --output=/home/phutton/scratch/hfd-rna/logs/align_%A_%a.out
 #SBATCH --error=/home/phutton/scratch/hfd-rna/logs/align_%A_%a.err
-#SBATCH --array=1-4
+#SBATCH --array=1-4%2 # limit to 2 concurrent jobs to manage memory usage
 
 # ------------------------------
 # Directories and Files
