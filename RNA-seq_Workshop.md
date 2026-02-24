@@ -388,7 +388,7 @@ Once your job has finished running, we can download our bigWig files from Jupyte
 
 ![IGV Tracks](https://github.com/user-attachments/assets/7569dfa3-b132-4795-84b2-a83e7a039f06)
 
-However, going through the entire genome gene by gene is impratical. To identify genes whose expression is different in our treatment vs our control condition, we will need to first count our uniquely mapped reads and test whether the change in expression is statistically significant.
+However, going through the entire genome gene by gene is impractical. To identify genes whose expression is different in our treatment vs our control condition, we will need to first count our uniquely mapped reads and test whether the change in expression is statistically significant.
 
 ## V. Counting Your Aligned Reads
 
