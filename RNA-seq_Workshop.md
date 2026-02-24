@@ -618,12 +618,10 @@ sig_res$gene_symbol <- mapIds(org.Mm.eg.db,
 
 # Merge and create list of significant DEGs
 sig_res <- sig_res %>%
-  dplyr::select(gene_symbol, everything()) %>%
+  rownames_to_column(var = "ensemblID") %>%
+  dplyr::select(ensemblID, gene_symbol, everything()) %>%
   filter(!is.na(gene_symbol)) %>%
-  arrange(desc(log2FoldChange)) %>%
-  cbind(ensemblID = rownames(sig_res), .) %>%
-  dplyr::select(ensemblID, gene_symbol, everything())
-rownames(sig_res) = NULL
+  arrange(desc(log2FoldChange))
 
 # Save significant DEGs to a csv
 write.csv(sig_res, "significant_DEGs.csv")
