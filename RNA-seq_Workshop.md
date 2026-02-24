@@ -1,5 +1,7 @@
 # BIOC 600 Workshop 1: RNA-seq
 
+![RNA-seq Workflow](https://github.com/user-attachments/assets/c285ea45-de4a-4d06-86e2-d84f65383deb)
+
 ## I. Downloading Published Genomic Datasets
 The [National Center for Biotechnology Information (NCBI)](https://www.ncbi.nlm.nih.gov/) hosts the [Gene Expression Omnibus (GEO)](https://www.ncbi.nlm.nih.gov/geo/), a data repository that allows people to freely access published genomics datasets.
 
@@ -231,7 +233,7 @@ Once you have validated that your sequencing files are of good quality, we can g
 
 ## III. Aligning Reads to a Reference Genome
 
-We will be using the STAR (<ins>S</ins>pliced <ins>T</ins>ranscripts <ins>A</ins>lignmnet to a <ins>R</ins>eference) aligner to map our RNA-seq reads to the mouse mm10 reference genome. Before we can align reads to a reference genome, we must first index our reference genome so that the STAR software can work with it. **For the sake of time, we have already prepared an indexed genome for the mouse mm10 reference genome that you can use**.
+We will be using the STAR (<ins>S</ins>pliced <ins>T</ins>ranscripts <ins>A</ins>lignment to a <ins>R</ins>eference) aligner to map our RNA-seq reads to the mouse mm10 reference genome. Before we can align reads to a reference genome, we must first index our reference genome so that the STAR software can work with it. **For the sake of time, we have already prepared an indexed genome for the mouse mm10 reference genome that you can use**.
 
 If you require a reference genome for a difference organism for this workshop, let us know and we can prepare this for you.
 
@@ -305,7 +307,7 @@ After the alignment has finished, you should have 5 output files:
 4. Log.progress.out: a detailed progress file 
 5. SJ.out.tab: a splice junction output file
 
-You can look inside your Log.Final.out files to get an idea as to how well your reads mapped to the reference genome. We ideally want to see around 60-75% of uniquely mapped reads to be mapped to the reference genome. Lower than this is a red flag that points to issues in our alignment. There are additional steps you can take to do QC on your RNA-seq data such as running RNA-SeQC that allow you to get a better understanding of the biases in your sequencing data.
+You can look inside your Log.Final.out files to get an idea as to how well your reads mapped to the reference genome. We ideally want to see around 60-75% of uniquely mapped reads to be mapped to the reference genome. Lower than this is a red flag that points to issues in our alignment. There are additional steps you can take to do QC on your RNA-seq data such as running [RNA-SeQC](https://github.com/getzlab/rnaseqc) that allow you to get a better understanding of the biases in your sequencing data.
 
 Finally, a great way to assess our data is to visualize it on a genome viewer.
 
@@ -722,11 +724,11 @@ We can also use our list of DEGs to figure out what biological pathways they're 
 
 ## VIII. Gene Ontology: What Pathways Are These DEGs Involved In?
 
-Let's take our list of DEGs and see what biological processes they're associated with. We can use the [EnrichR](https://maayanlab.cloud/Enrichr/) webtool to access several Gene Set Enrichment Analyses and Gene Ontology Pathways. We will paste the gene names of our DEGs and look at MSigDB Hallmark 2020.
+Let's take our list of DEGs and see what biological processes they're associated with. We can use the [Enrichr](https://maayanlab.cloud/Enrichr/) webtool to access several Gene Set Enrichment Analyses and Gene Ontology Pathways. We will paste the gene names of our DEGs and look at MSigDB Hallmark 2020.
 
-![EnrichR Home Page](https://github.com/user-attachments/assets/e900b87b-e149-4889-bfc5-de592f241cfd)
+![Enrichr Home Page](https://github.com/user-attachments/assets/e900b87b-e149-4889-bfc5-de592f241cfd)
 
-![EnrichR MSigDB](https://github.com/user-attachments/assets/3a85d3ca-a0b7-4102-9bcf-c71159fe4575)
+![Enrichr MSigDB](https://github.com/user-attachments/assets/3a85d3ca-a0b7-4102-9bcf-c71159fe4575)
 
 We can export the entries to a table and take a closer look:
 
@@ -829,20 +831,30 @@ Plotting the heatmap will give us something that looks like this:
 
 You now have all the tools and resources to be able to analyze RNA-seq data and plot some useful figures to better understand your data.
 
-If you are interested in learning more about the tools you worked with during this workshop or if you find yourself struggling with a few sections, I've linked below resources that I hope you will find useful.
-
 Good luck with the rest of the workshop!
 
 ## IX. Resources
-### Software Documentation
-- Fastp
-- STAR
-- featureCounts
-- DESeq2
 
-### Recommened Readings
+If you are interested in learning more about the tools you worked with during this workshop, if you want to dive deeper into bioinformatics, or if you find yourself struggling, I've linked below resources that I hope you will find useful.
+
+### Software Documentation
+- [Fastp](https://github.com/OpenGene/fastp)
+- [STAR](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf)
+- [Samtools](https://www.htslib.org/)
+- [deepTools](https://deeptools.readthedocs.io/en/latest/index.html)
+- [featureCounts](https://subread.sourceforge.net/featureCounts.html)
+- [Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
 
 ### Free Programming Courses/Tutorials
+- [McGill Initiative in Computational Medicine](https://www.mcgill.ca/micm/)
+- [Codecademy: Learn R](https://www.codecademy.com/enrolled/courses/learn-r)
+- [Codecademy: Python for Programmers](https://www.codecademy.com/enrolled/courses/python-for-programmers)
+- [Codecademy: Getting Started with Python for Data Science](https://www.codecademy.com/enrolled/courses/getting-started-with-python-for-data-science)
 
 ### Free Online Tools
+- [SRA-Explorer](https://sra-explorer.info/): Search and download fastq files
+- [Enrichr](https://maayanlab.cloud/Enrichr/): Look up Gene Set Enrichment and Gene Ontologies for a list of genes
+- [UCSC Genome Browser](https://genome.ucsc.edu/): Online genome browser and a resource for downloading reference genomes and gene annotation files
+- [Paletton](https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF): Guides the selection of a colour palette for designing figures
+- [Bioart](https://bioart.niaid.nih.gov/): Scientific illustrations provided for free by the NIH for any use.
 
