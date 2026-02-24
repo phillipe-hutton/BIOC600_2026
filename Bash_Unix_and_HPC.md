@@ -55,3 +55,7 @@ Here is a cheat sheet of common Bash commands and what they do:
 | module avail | See what software is available to use |
 | module load | Load software |
 | module purge | Unloads all software |
+
+For a deeper dive into bash, you can read the following resources:
+- [Bash Tutorial](https://www.w3schools.com/bash/index.php)
+- [Bash cheat sheet: Top 25 commands and creating custom commands](https://www.educative.io/blog/bash-shell-command-cheat-sheet)
