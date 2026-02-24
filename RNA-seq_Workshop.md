@@ -345,7 +345,7 @@ However, bam files are huge and not fun to transfer to your local hard drive. So
 # Directories and Files
 # -----------------------------
 SAMPLES_FILE=~/scratch/hfd-rna/samples.txt
-INPUT_DIR=~/scratch/hfd-rna/align
+INPUT_DIR=~/projects/def-sponsor00/phutton/hfd-rna/align
 OUTPUT_DIR=~/scratch/hfd-rna/bigwig
 VIRT_ENV=~/projects/def-sponsor00/phutton/virtual_envs/deepTools_env # path to my virtual environment with deepTools installed
 
@@ -407,7 +407,7 @@ We will be using featureCounts to count our uniquely mapped reads.
 # Directories and Files
 # -----------------------------
 ANNOTATION_DIR=~/projects/def-sponsor00/phutton/genomes/mm10.ensGene.gtf # keep as this to access my annotation file
-INPUT_DIR=~/scratch/hfd-rna/align
+INPUT_DIR=~/projects/def-sponsor00/phutton/hfd-rna/align
 OUTPUT_DIR=~/scratch/hfd-rna/counts
 
 # -----------------------------
@@ -428,6 +428,17 @@ featureCounts -T 4 \
               -o ${OUTPUT_DIR}/counts.txt \
               ${INPUT_DIR}/*_Aligned.sortedByCoord.out.bam
 ````
+
+- `-T` number of threads for the command
+- `-p` specifies that input data is paired-end
+- `countReadPairs` specifies that read pairs will be counted instead of reads (should be included for paired-end data)
+- `-B` directs featureCounts to only count fragments with both end successfully aligned
+- `-C` directs featureCounts to **NOT** count chimeric fragments (fragments that have their two ends aligned to different chromosomes)
+- `-s` specifies that the data is unstranded (0), stranded (1), or reversely stranded (2)
+- `-t` specifies the feature type being counted (exons in our case)
+- `-g` specifies the attribute type used to group features (e.g. exons) into meta-features (e.g. genes) when gtf annotation is provided (default = gene_id)
+- `-a` specifies the pathway to the gene annotation gtf file
+- `-o` name of the output file
 
 This will generate a counts.txt file with the counts assigned to an Ensembl Gene ID. To make this file useable, we will clean it up using R
 
