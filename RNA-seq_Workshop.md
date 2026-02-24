@@ -79,7 +79,7 @@ Change the working directory to the scratch directory and we will create new dir
 
 ```
 [phutton@login1 ~]$ cd scratch/
-[phutton@login1 scratch]$ mkdir -p hfd-rna/{align,bigwig,counts,fastq/{raw,trim,fastqc},logs,scripts}
+[phutton@login1 scratch]$ mkdir -p hfd-rna/{align,bigwig,counts,fastq/{raw,trim,},logs,scripts}
 ```
 
 Set your working directory to the raw directory nested in the fastq directory, then copy and paste our modified bash script into your terminal and hit Enter. It will take a while for this to run.
@@ -87,6 +87,8 @@ Set your working directory to the raw directory nested in the fastq directory, t
 ## II. Trimming and Assessing the Quality of your FastQ Files
 
 Once you have downloaded your FastQ files, it is good practice to trim the adapters and to assess the quality of your raw sequencing files. There's no point in analyzing a poorly sequenced experiment! One of the tools we can use to do this is called fastp. Fastp is able to autodetect the presence of adapters in your FastQ files, trim them out, and give you an html report file of the quality of the files.
+
+We can write the scripts as follows:
 
 ```
 #!/bin/bash
@@ -209,7 +211,11 @@ Create your trimming bash script: `nano fastp.sh` and paste in your fastp script
 
 To submit the job to the Slurm job scheduler, type in `sbatch fastp.sh` and hit enter. You will be able to track your progress using the `sq` command.
 
-If you run into any issues with a job, you can enter `sacct -j <job_id> --format=JobID,JobName,Partition,Account,AllocCPUS,State,ExitCode,Elapsed,MaxRSS` and you will receive the error codes for the submitted jobs to get an idea of what when wrong. You should also look at your logs directory to see the .out and .err files for your corresponding jobs for further troubleshooting.
+If you run into any issues with a job, you can enter 
+
+`sacct -j <job_id> --format=JobID,JobName,Partition,Account,AllocCPUS,State,ExitCode,Elapsed,MaxRSS` 
+
+and you will receive the error codes for the submitted jobs to get an idea of what when wrong. You should also look at your logs directory to see the .out and .err files for your corresponding jobs for further troubleshooting.
 
 To view the report, login to the HPC cluster using JupyterHub, go to the trim directory, and open the html files. The report will look like this:
 
@@ -221,19 +227,15 @@ To view the report, login to the HPC cluster using JupyterHub, go to the trim di
 
 ![Fastp Report: Filtering Stats](https://github.com/user-attachments/assets/697601f3-4c17-494a-91e2-8f51487dba0c)
 
-
-
-
-
-
+Once you have validated that your sequencing files are of good quality, we can go ahead and align the reads to a reference genome.
 
 ## III. Aligning Reads to a Reference Genome
 
-Before we can align reads to a reference genome, we must first index our reference genome so that the STAR software can work with it. **For the sake of time, we have already prepared an indexed genome for the mouse mm10 reference genome that you can use**.
+We will be using the STAR (<ins>S</ins>pliced <ins>T</ins>ranscripts <ins>A</ins>lignmnet to a <ins>R</ins>eference) aligner to map our RNA-seq reads to the mouse mm10 reference genome. Before we can align reads to a reference genome, we must first index our reference genome so that the STAR software can work with it. **For the sake of time, we have already prepared an indexed genome for the mouse mm10 reference genome that you can use**.
 
-If you require a reference genome for a difference organism, you can do the following:
+If you require a reference genome for a difference organism for this workshop, let us know and we can prepare this for you.
 
-Go to the UCSC Genome Browser
+To run the aligner, we will use this script:
 
 ```
 #!/bin/bash
@@ -284,9 +286,32 @@ STAR --runMode alignReads \
      --outSAMattributes Standard \
      --outFileNamePrefix ${OUTPUT_DIR}/${SAMPLE}_
 ```
+- `--runMode` tells STAR we are aligning reads to a reference genome
+- `--runThreadN 8` tells STAR that we will be using 8 cpus per task
+- `--genomeDir` specifies the pathway of our indexed genome directory
+- `--readFilesIn` specifies the pathway to our input fastq files 
+- `--readFilesCommand zcat` specifies that our files are gzipped
+- `--sjdbOverhang 99` specifies the length of the sequence around the annotated splice junction (ideal length is 99)
+- `--outSAMtype BAM SortedByCoordinate` directs the output files to be in the binary alignment map (BAM) format
+- `--outSAMunmapped Within` tells STAR to keep unmapped reads but specifies that they will not be used
+- `--outSAMattributes Standard` indicates standard setting for SAM attributes
+- `--outFileNamePrefix` specifies the output folder and the prefix you want your aligned files to start with
+
+After the alignment has finished, you should have 5 output files:
+
+1. Log.Final.out: a summary file of your alignment
+2. Aligned.SortedByCoordinant.bam: your aligned reads
+3. Log.out: a progress output file
+4. Log.progress.out: a detailed progress file 
+5. SJ.out.tab: a splice junction output file
+
+You can look inside your Log.Final.out files to get an idea as to how well your reads mapped to the reference genome. We ideally want to see around 60-75% of uniquely mapped reads to be mapped to the reference genome. Lower than this is a red flag that points to issues in our alignment. There are additional steps you can take to do QC on your RNA-seq data such as running RNA-SeQC that allow you to get a better understanding of the biases in your sequencing data.
+
+Finally, a great way to assess our data is to visualize it on a genome viewer.
 
 ## IV. Visualizing Your Aligned Sequencing Files
 
+We will use IGV to visualize our aligned RNA-seq data. IGV can accept bam files if they're indexed, so it's good practice to index your bam files:
 
 ```
 #!/bin/bash
@@ -301,6 +326,8 @@ module load samtools/1.22.1
 # index bam files
 samtools index -M ~/scratch/hfd-rna/align/*_Aligned.sortedByCoord.out.bam
 ```
+
+However, bam files are huge and not fun to transfer to your local hard drive. So, we will show some mercy for our local storage space by generating bigWig files from our bam files. bigWig files are much smaller and load nicely onto IGV. To generate bigWigs, we will be using the bamCoverage command from deepTools.
 
 ```
 #!/bin/bash
@@ -355,7 +382,16 @@ bamCoverage -b ${INPUT_DIR}/${SAMPLE}_Aligned.sortedByCoord.out.bam \
 deactivate
 ```
 
+Once your job has finished running, we can download our bigWig files from JupyterHub and load them into IGV. This is a great way to see how your treatment impacts the expression of different genes. This also allows to to combine RNA-seq data with ChIP-seq tracks to see where transcription factors of interest are binding as well as changes in histone marks.
+
+![IGV Tracks](https://github.com/user-attachments/assets/7569dfa3-b132-4795-84b2-a83e7a039f06)
+
+However, going through the entire genome gene by gene is impratical. To identify genes whose expression is different in our treatment vs our control condition, we will need to first count our uniquely mapped reads and test whether the change in expression is statistically significant.
+
 ## V. Counting Your Aligned Reads
+
+We will be using featureCounts to count our uniquely mapped reads.
+
 ```
 #!/bin/bash
 #SBATCH --job-name=FeatureCounts
@@ -391,14 +427,15 @@ featureCounts -T 4 \
               ${INPUT_DIR}/*_Aligned.sortedByCoord.out.bam
 ````
 
-We can now clean this up using R
+This will generate a counts.txt file with the counts assigned to an Ensembl Gene ID. To make this file useable, we will clean it up using R
+
+First, make sure you have these packages installed and loaded:
 
 ```
 #R
 
 # Install packages
 install.packages("tidyverse")
-install.packages("tibble")
 install.packages("BiocManager")
 BiocManager::install("AnnotationDbi")
 BiocManager::install("DESeq2")
@@ -408,7 +445,6 @@ BiocManager::install("pheatmap")
 
 # Load libraries
 library(tidyverse)
-library(tibble)
 library(BiocManager)
 library(AnnotationDbi)
 library(DESeq2)
@@ -417,9 +453,11 @@ library(EnhancedVolcano)
 library(pheatmap)
 ```
 
-Next we will clean up the counts file
+Now we can clean up the counts file
 
 ```
+#R
+
 # Read featureCounts output
 raw_counts <- read.table(
   "counts.txt",
@@ -450,74 +488,356 @@ countMatrix <- countMatrix %>% dplyr::select(-Geneid)
 write.csv(countMatrix, "countMatrix.csv")
 ```
 
+Next, we will set up our data to determine which which genes are differentially expressed.
 
 ## VI. Analyzing Differentially Expressed Genes (DEGs)
+
+To obtain our list of DEGs, we will be using DESeq2. To set up the experiment for DESeq2, we will first create a meta data file that provides information about our experimental design.
+
 ```
 #R
 
-```
-## VII. Visualizing DEGs
-```
-#R
-
-```
-
-## VIII. Gene Ontology: What Pathways Are These DEGs Involved In?
-```
-#R
-library(clusterProfiler)
-library(enrichplot)
-library(org.Mus.eg.db)
-
-data <- read.table()
-colnames(data)[1] <- "gene_names"
-
-head(data)
-# we want the log2 fold change
-original_gene_list <- data$log2FoldChange
-
-# name the vector
-names(original_gene_list) <- data$gene_names
-
-# omit any NA values
-gene_list <- na.omit(original_gene_list)
-
-# sort the lsit in decreasing order (required for clusterProfiler)
-gene_list <- sort(gene_list, decreasing=TRUE)
-
-# extract significant results (padj < 0.05)
-sig_genes_df <- subset(data, padj < 0.05)
-
-# from significant results, we want to filter on log2 fold change
-sig_genes_df <- subset(sig_genes_df, log2FoldChange >= 2)
-
-# name the vector
-genes <- sig_genes_df$log2FoldChange
-names(genes) <- sig_genes_df$gene_names
-
-# omit NA values
-genes <- na.omit(genes)
-
-# filter on min log2 fold change (log2FoldChange >= 2)
-genes <- names(genes)[abs(genes) >= 2]
-
-# GO plot
-go_enrich <- enrichGO(gene = genes,
-                      universe = names(gene_list),
-                      OrgDb = org.Mus.eg.db,
-                      keyType = "ENSEMBL",
-                      readable = TRUE,
-                      ont = "BP",
-                      pvalueCutoff = 0.05,
-                      qvalueCutoff = 0.05
+#Create sample metadata
+meta <- data.frame(
+  sample = c("chow_rep1", "chow_rep2", "hfd_rep1", "hfd_rep2"),
+  condition = c("chow", "chow", "hfd", "hfd"),
+  row.names = "sample"
 )
 
-dotplot(go_enrich)
+# Save meta as a csv
+write.csv(meta, "meta.csv")
 ```
+
+Next, we will validate that our count matrix and our meta data is set up properly for DESeq2 to work.
+
+```
+#R
+
+# Validation of count data and meta data for DESeq2
+class(countMatrix)
+class(meta)
+all(colnames(countMatrix) %in% rownames(meta))
+all(colnames(countMatrix) == rownames(meta))
+head(countMatrix)
+head(meta)
+```
+
+If done properly, you should get this in response:
+
+```
+[1] "data.frame"
+> class(meta)
+[1] "data.frame"
+> all(colnames(countMatrix) %in% rownames(meta))
+[1] TRUE
+> all(colnames(countMatrix) == rownames(meta))
+[1] TRUE
+> head(countMatrix)
+chow_rep1 chow_rep2 hfd_rep1 hfd_rep2
+ENSMUSG00000102693         0         0        0        0
+ENSMUSG00000064842         0         0        0        0
+ENSMUSG00000051951         0         0        1        5
+ENSMUSG00000102851         0         0        0        0
+ENSMUSG00000103377         0         0        0        0
+ENSMUSG00000104017         0         0        0        0
+> head(meta)
+condition
+chow_rep1      chow
+chow_rep2      chow
+hfd_rep1        hfd
+hfd_rep2        hfd
+```
+
+Before proceeding with DESeq2, we should first ensure that our controls are listed first in the factor levels for our treatment to make sure our comparison is being done properly. 
+
+```
+#R
+
+# Ensure our controls are first in the factor levels for condition
+meta$condition <- factor(meta$condition, levels = c("chow", "hfd"))
+```
+
+Now we can run DESeq2:
+
+```
+#R
+
+# Create DESeqDataSet object from our count matrix and run DESeq2
+dds <- DESeqDataSetFromMatrix(countData = countMatrix, colData = meta, design = ~ condition)
+dds <- DESeq(dds)
+```
+
+To obtain the name of our DESeq2 comparison, we can obtain the results name:
+
+```
+#R
+
+# get results names
+resultsNames(dds)
+```
+
+Which will give us this:
+
+```
+[1] "Intercept"        "condition_hfd_vs_chow"
+```
+
+And now we can extract the results of this comparison:
+
+```
+#R
+
+# Extract our DESeq2 results
+res <- results(dds, name = "condition_hfd_vs_chow")
+
+# Convert to a data frame
+res <- as.data.frame(res)
+```
+
+Now we must filter our results so that we only keep statistically significant values
+
+```
+#R
+
+# Filter for significant DEGs (padj < 0.05 and FoldChange > |1.5|) and remove NAs
+sig_res <- res %>%
+  filter(!is.na(padj), padj < 0.05,
+       !is.na(log2FoldChange), abs(log2FoldChange) > log2(1.5))
+```
+
+To be able to understand our significant results, we must convert the Ensembl Gene IDs to something that we can actually read and understand. We will use AnnotationDbi to help us with this using the org.Mm.eg.db mouse gene database.
+
+```
+#R
+
+# Add gene symbols to the significant results
+sig_res$gene_symbol <- mapIds(org.Mm.eg.db,
+                              keys = rownames(sig_res),
+                              column = "SYMBOL",
+                              keytype = "ENSEMBL")
+
+# Merge and create list of significant DEGs
+sig_res <- sig_res %>%
+  dplyr::select(gene_symbol, everything()) %>%
+  filter(!is.na(gene_symbol)) %>%
+  arrange(desc(log2FoldChange)) %>%
+  cbind(ensemblID = rownames(sig_res), .) %>%
+  dplyr::select(ensemblID, gene_symbol, everything())
+rownames(sig_res) = NULL
+
+# Save significant DEGs to a csv
+write.csv(sig_res, "significant_DEGs.csv")
+```
+
+Now we have an annotated list of DEGs that we can analyze.
+
+## VII. Visualizing DEGs
+
+First, let's see how many DEGs are upregulated vs downregulated under a high fat diet:
+
+```
+#R
+
+# Select upregulated DEGs
+upreg_DEGs <- sig_res %>%
+  filter(log2FoldChange > 0)
+
+# Select downregulated DEGs
+downreg_DEGs <- sig_res %>%
+  filter(log2FoldChange < 0)
+
+# Create summary data to generate bar plot
+deg_summary <- data.frame(
+  category = c("Upregulated", "Downregulated"),
+  count = c(nrow(upreg_DEGs), nrow(downreg_DEGs))
+)
+
+# plot upregulated vs downregulated DEGs as a bar plot
+ggplot(deg_summary, aes(x = category, y = count, fill = category)) +
+  geom_col(alpha = 0.7) +
+  geom_text(aes(label = count), 
+            vjust = -0.5,
+            family = "Helvetica",
+            size = 5) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 800)) +
+  labs(title = "Differentially Expressed Genes in HFD vs Chow",
+       x = "",
+       y = "# of DEGs") +
+  scale_fill_manual(values = c("Upregulated" = "firebrick", 
+                               "Downregulated" = "steelblue")) +
+  theme(
+    plot.title = element_text(family = "Helvetica", size = 16),
+    axis.title = element_text(family = "Helvetica", size = 12),
+    axis.text.x = element_text(family = "Helvetica", size = 12, angle = 45, hjust = 1),
+    axis.line.y = element_line(color = "black"),
+    axis.ticks.length = unit(0.2, "cm"),
+    legend.position = "none",
+    panel.background = element_blank()
+  )
+```
+
+This will give us a bar plot that looks like this:
+
+![HFD DEGs Bar Plot](https://github.com/user-attachments/assets/0640f78f-02ad-4d1f-b61a-2939c84f78be)
+
+We can also generate a volcano plot:
+
+```
+#R
+
+# Volcano plot of all DEGs
+plot_data <- res
+
+plot_data$gene_symbol <- mapIds(org.Mm.eg.db,
+                              keys = rownames(plot_data),
+                              column = "SYMBOL",
+                              keytype = "ENSEMBL")
+
+EnhancedVolcano(
+  plot_data,
+  lab = plot_data$gene_symbol,
+  x = 'log2FoldChange',
+  xlab = bquote(~Log[2]~ "(FC)"),
+  y = 'padj',
+  ylab = bquote(~-Log[10]~ "(Padj)"),
+  legendLabels = c("NS", "Log2(FC)", "Padj", "Padj & Log2(FC)"),
+  pCutoff = 0.05,
+  FCcutoff = 1.5,
+  legendPosition = 'right',
+  drawConnectors = TRUE,
+  widthConnectors = 0.75,
+  labSize = 3.0,
+  colAlpha = 0.7,
+  max.overlaps = 20,
+  gridlines.major = FALSE,
+  gridlines.minor = FALSE,
+  caption = NULL,
+  title = "Differentially Expressed Genes in HFD vs Chow",
+)
+```
+
+Which will give us this:
+
+![Volcano_Plot](https://github.com/user-attachments/assets/576a5eb1-e5ee-4037-a7d3-608b01d06548)
+
+We can also use our list of DEGs to figure out what biological pathways they're involved in.
+
+## VIII. Gene Ontology: What Pathways Are These DEGs Involved In?
+
+Let's take our list of DEGs and see what biological processes they're associated with. We can use the [EnrichR](https://maayanlab.cloud/Enrichr/) webtool to access several Gene Set Enrichment Analyses and Gene Ontology Pathways. We will paste the gene names of our DEGs and look at MSigDB Hallmark 2020.
+
+![EnrichR Home Page](https://github.com/user-attachments/assets/e900b87b-e149-4889-bfc5-de592f241cfd)
+
+![EnrichR MSigDB](https://github.com/user-attachments/assets/3a85d3ca-a0b7-4102-9bcf-c71159fe4575)
+
+We can export the entries to a table and take a closer look:
+
+![MSigDB File](https://github.com/user-attachments/assets/3beb7e33-fd7f-4bb0-8a80-d49fd57dbdcb)
+
+Adding the file into our working directory, we can create a bar plot to show the top 10 hits we get back ordered by p-value:
+
+```
+#R
+
+# Read table and select top 10 significant pathways based on adjusted p-value
+msigdb <- read.table("MSigDB_Hallmark_2020_table.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE, check.names = FALSE)
+msigdb <- as_tibble(msigdb)
+msigdb <- msigdb %>%
+  arrange(`P-value`) %>%
+  dplyr::select(`Term`,`P-value`,`Adjusted P-value`,`Genes`) %>%
+  slice_head(n = 10)
+
+# Mutate to add -log10(P-value) and split genes into lists
+msigdb <- msigdb %>%
+  mutate(`-log10(P-value)` = -log10(`P-value`)) %>%
+  mutate(gene_list = strsplit(Genes, ";")) %>%
+  dplyr::select(-Genes)
+  
+# Make bar plot of top 10 significant pathways using -log10(P-value) as the x-axis and Term as the y-axis
+ggplot(msigdb, aes(x = `-log10(P-value)`, y = reorder(Term, `-log10(P-value)`), fill = `-log10(P-value)`)) +
+  geom_col(fill = "steelblue", alpha = 0.7) +
+  labs(title = "MSigDB HallMark 2020",
+       x = "-log10(P-value)",
+       y = "") +
+  scale_x_continuous(expand = c(0,0), limits = c(0, 25)) +
+  theme(
+    plot.title = element_text(family = "Helvetica", size = 16),
+    axis.title = element_text(family = "Helvetica", size = 12),
+    axis.text = element_text(family = "Helvetica", size = 10),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_line(color = "black"),
+    axis.ticks.length = unit(0.2, "cm"),
+    legend.position = "none",
+    panel.background = element_blank()
+  )
+```
+
+Which gives us this:
+
+![MSigDB_BarPlot](https://github.com/user-attachments/assets/7ea1e1c6-aa0a-41d5-91c8-d0a4a8a968b3)
+
+
+Let's take a closer look at the genes enriched for "*Epithelial Mesenchymal Transition*"
+
+```
+#R
+
+# Extract EMT DEGs List
+emt_genes <- msigdb %>%
+  filter(Term == "Epithelial Mesenchymal Transition") %>%
+  unnest("gene_list") %>%
+  dplyr::select(gene_list) %>%
+  as.data.frame()
+
+# Extract from Significant DEGs List
+emt_genes <- emt_genes %>%
+  mutate(gene_list = str_to_title(gene_list)) # Convert to title case
+emt_genes <- filter(sig_res, gene_symbol %in% emt_genes$gene_list)
+```
+
+One way that we can visualize how the expression of this set of genes is to plot a heatmap using pheatmap. To do this, we will use the Regularized Logarithmic (rlog) transformation from DESeq2. DESeq2 also has the Variance Stabilizing Transformation (vst) which is better for larger datasets (anything larger than 50 genes). Since we are working with 46 genes, we will opt for the rlog transformation since it looks nicer.
+
+```
+#R
+
+# Prepare matrix data for heatmap
+genes_to_plot <- emt_genes$ensemblID
+emt_degs <- rlog(dds[genes_to_plot,], blind = TRUE)
+mat <- assay(emt_degs)[genes_to_plot,]
+gene_symbols_vec <- setNames(emt_genes$gene_symbol, emt_genes$ensemblID)
+matched_symbols <- gene_symbols_vec[rownames(mat)]
+matched_symbols[is.na(matched_symbols)] <- rownames(mat)[is.na(matched_symbols)]
+rownames(mat) <- matched_symbols
+mat_z <- t(scale(t(mat)))
+annotation <- data.frame(Condition = c("Chow", "Chow", "HFD", "HFD"))
+rownames(annotation) <- colnames(mat_z)
+
+# plot heatmap
+pheatmap(mat_z,
+         annotation_col = annotation,
+         cluster_rows = TRUE,
+         cluster_cols = FALSE,
+         show_rownames = TRUE,
+         show_colnames = FALSE,
+         fontsize_row = 6,
+         border_color = NA,
+         scale = "none")
+
+```
+
+Plotting the heatmap will give us something that looks like this:
+
+![Pheatmap_EMT](https://github.com/user-attachments/assets/63fb2778-d9bc-4c53-b837-f743057ac064)
+
+You now have all the tools and resources to be able to analyze RNA-seq data and plot some useful figures to better understand your data.
+
+If you are interested in learning more about the tools you worked with during this workshop or if you find yourself struggling with a few sections, I've linked below resources that I hope you will find useful.
+
+Good luck with the rest of the workshop!
+
 ## IX. Resources
 ### Software Documentation
-- FastQC
-- Trimmomatic
+- Fastp
 - STAR
 - featureCounts
 - DESeq2
