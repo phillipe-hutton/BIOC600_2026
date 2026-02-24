@@ -48,14 +48,11 @@ Note that the usage of Copilot, as with other AI tools, should be done with caut
 
 Additionally, I advise that this tool should be used as an advanced "autocomplete" like when you text your friends: It's handy when it gives you the response that you're looking for—but it won't always give you the response that you actually want to use. So always check your scrips to make sure there's no errors in it.
 
-I encourage you to read through the workshop material in advance so that you are prepared for the day of the workshop. We will go in the following order:
+Additionally, you should also download the [Integrative Genomics Viewer (IGV)](https://igv.org/doc/desktop/#DownloadPage/) application to be able to visualize the genomics datasets we will be analyzing.
 
-1. Bash, Unix, and HPC
-2. R and R Studio
-3. RNA-seq Analysis
-4. ChIP-seq Analysis
+I encourage you to read through the workshop material in advance so that you are prepared for the day of the workshop.
 
-Focus on 1 and 2 at the beginning as this is the content that people tend to struggle with at first. We look forward to seeing you at the first workshop!
+We look forward to seeing you at the first workshop!
 
 Phillipe Hutton & Ishtiaque Hossain
 
