@@ -403,6 +403,7 @@ install.packages("BiocManager")
 BiocManager::install("AnnotationDbi")
 BiocManager::install("DESeq2")
 BiocManager::install("org.Mm.eg.db")
+BiocManager::install("EnhancedVolcano")
 BiocManager::install("pheatmap")
 
 # Load libraries
@@ -412,6 +413,7 @@ library(BiocManager)
 library(AnnotationDbi)
 library(DESeq2)
 library(org.Mm.eg.db)
+library(EnhancedVolcano)
 library(pheatmap)
 ```
 
@@ -419,21 +421,33 @@ Next we will clean up the counts file
 
 ```
 # Read featureCounts output
-raw_counts <- read.table("counts.txt", header = TRUE, comment.char = "#", stringsAsFactors = FALSE)
+raw_counts <- read.table(
+  "counts.txt",
+  header = TRUE,
+  comment.char = "#",
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+
+# Convert to data frame
+raw_counts <- as.data.frame(raw_counts)
 
 # Keep Geneid + count columns, rename for clarity
-clean_counts <- raw_counts %>%
-  select(Geneid, starts_with("chow_rep"), starts_with("hfd_rep")) %>%
-  rename(
-    chow_rep1 = chow_rep1_rna_Aligned.sortedByCoord.out.bam,
-    chow_rep2 = chow_rep2_rna_Aligned.sortedByCoord.out.bam,
-    hfd_rep1 = hfd_rep1_rna_Aligned.sortedByCoord.out.bam,
-    hfd_rep2 = hfd_rep2_rna_Aligned.sortedByCoord.out.bam
+countMatrix <- raw_counts %>%
+  dplyr::select(Geneid, contains("chow_rep"), contains("hfd_rep")) %>%
+  dplyr::rename(
+    chow_rep1 = "/home/phutton/scratch/hfd-rna/align/chow_rep1_rna_Aligned.sortedByCoord.out.bam",
+    chow_rep2 = "/home/phutton/scratch/hfd-rna/align/chow_rep2_rna_Aligned.sortedByCoord.out.bam",
+    hfd_rep1 = "/home/phutton/scratch/hfd-rna/align/hfd_rep1_rna_Aligned.sortedByCoord.out.bam",
+    hfd_rep2 = "/home/phutton/scratch/hfd-rna/align/hfd_rep2_rna_Aligned.sortedByCoord.out.bam"
   )
 
-# Save cleaned table
-write.csv(clean_counts, "clean_counts.csv", row.names = FALSE)
+# set Geneid as row names and remove the Geneid column
+rownames(countMatrix) <- countMatrix$Geneid
+countMatrix <- countMatrix %>% dplyr::select(-Geneid)
 
+# Save countMatrix as a csv
+write.csv(countMatrix, "countMatrix.csv")
 ```
 
 
