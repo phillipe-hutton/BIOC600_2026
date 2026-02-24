@@ -793,7 +793,7 @@ emt_genes <- emt_genes %>%
 emt_genes <- filter(sig_res, gene_symbol %in% emt_genes$gene_list)
 ```
 
-One way that we can visualize how the expression of this set of genes is to plot a heatmap using pheatmap. To do this, we will use the Regularized Logarithmic (rlog) transformation from DESeq2. DESeq2 also has the Variance Stabilizing Transformation (vst) which is better for larger datasets (anything larger than 50 genes). Since we are working with 46 genes, we will opt for the rlog transformation since it looks nicer.
+One way that we can visualize how the expression of this set of genes is altered under a high fat diet is to plot a heatmap using pheatmap. To do this, we will use the Regularized Logarithmic (rlog) transformation from DESeq2. DESeq2 also has the Variance Stabilizing Transformation (vst) which is better for larger datasets (anything larger than 50 genes). Since we are working with 46 genes, we will opt for the rlog transformation since it looks nicer.
 
 ```
 #R
