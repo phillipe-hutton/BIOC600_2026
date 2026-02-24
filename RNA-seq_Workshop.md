@@ -286,19 +286,20 @@ STAR --runMode alignReads \
 ```
 
 ## IV. Visualizing Your Aligned Sequencing Files
+
+
 ```
 #!/bin/bash
 #SBATCH --job-name=index
 #SBATCH --time=1:00:00
 #SBATCH --mem=10G
-#SBATCH --cpus-per-task=4
-#SBATCH --output=index.out
+#SBATCH --output=/home/phutton/scratch/hfd-rna/logs/index.out
 
 # load modules
-module load samtools/1.17
+module load samtools/1.22.1
 
 # index bam files
-samtools index *_Aligned.sortedByCoord.out.bam
+samtools index -M ~/scratch/hfd-rna/align/*_Aligned.sortedByCoord.out.bam
 ```
 
 ```
@@ -307,14 +308,17 @@ samtools index *_Aligned.sortedByCoord.out.bam
 #SBATCH --time=1:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=20G
-#SBATCH --output=bigwig_%A_%a.out
+#SBATCH --output=/home/phutton/scratch/hfd-rna/logs/bigwig_%A_%a.out
+#SBATCH --error=/home/phutton/scratch/hfd-rna/logs/bigwig_%A_%a.err
 #SBATCH --array=1-4
 
 # -----------------------------
 # Directories and Files
 # -----------------------------
-
-SAMPLES_FILE=samples.txt
+SAMPLES_FILE=~/scratch/hfd-rna/samples.txt
+INPUT_DIR=~/scratch/hfd-rna/align
+OUTPUT_DIR=~/scratch/hfd-rna/bigwig
+VIRT_ENV=~/projects/def-sponsor00/phutton/virtual_envs/deepTools_env # path to my virtual environment with deepTools installed
 
 # -----------------------------
 # Setup Array
@@ -327,49 +331,111 @@ SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" ${SAMPLES_FILE})
 # Modules
 # -----------------------------
 
-module load python/3.5.6
+module load python/3.11.5
 
 # -----------------------------
 # Activate Virtual Environment
 # -----------------------------
 
-source home/phutton/scratch/virtual_envs/deepTools_env/bin/activate
+source ${VIRT_ENV}/bin/activate
 
 # -----------------------------
 # Convert BAM to bigWig
 # -----------------------------
 
-bamCoverage -b ${SAMPLE}_Aligned.sortedByCoord.out.bam \
+bamCoverage -b ${INPUT_DIR}/${SAMPLE}_Aligned.sortedByCoord.out.bam \
             --normalizeUsing CPM \
             -bs 20 \
             --smoothLength 60 \
             --numberOfProcessors 4 \
             -of bigwig \
-            -o ${SAMPLE}.bw
+            -o ${OUTPUT_DIR}/${SAMPLE}.bw
 
-# Deactivate Virtual Environment
+# deactivate virtual environment
 deactivate
 ```
 
 ## V. Counting Your Aligned Reads
 ```
 #!/bin/bash
-#SBATCH --job-name=counts
+#SBATCH --job-name=FeatureCounts
 #SBATCH --time=1:00:00
 #SBATCH --mem=10G
 #SBATCH --cpus-per-task=4
-#SBATCH --output="counts_progress.txt"
+#SBATCH --output=/home/phutton/scratch/hfd-rna/logs/counts.out
+#SBATCH --error=/home/phutton/scratch/hfd-rna/logs/counts.err
 
-# load modules
-module load StdEnv/2020 gcc/9.3.0 subread/2.0.3
+# -----------------------------
+# Directories and Files
+# -----------------------------
+ANNOTATION_DIR=~/projects/def-sponsor00/phutton/genomes/mm10.ensGene.gtf # keep as this to access my annotation file
+INPUT_DIR=~/scratch/hfd-rna/align
+OUTPUT_DIR=~/scratch/hfd-rna/counts
 
-# count reads
+# -----------------------------
+# Load Modules
+# -----------------------------
+
+module load StdEnv/2020 gcc/12.3 subread/2.0.6
+
 featureCounts -T 4 \
-              -s 2 \
-              -a <genome_gtf> \
-              -o <output_file> \
-              <input_bam>
+              -p \
+              --countReadPairs \
+              -B \
+              -C \
+              -s 0 \
+              -t exon \
+              -g gene_id \
+              -a ${ANNOTATION_DIR} \
+              -o ${OUTPUT_DIR}/counts.txt \
+              ${INPUT_DIR}/*_Aligned.sortedByCoord.out.bam
 ````
+
+We can now clean this up using R
+
+```
+#R
+
+# Install packages
+install.packages("tidyverse")
+install.packages("tibble")
+install.packages("BiocManager")
+BiocManager::install("AnnotationDbi")
+BiocManager::install("DESeq2")
+BiocManager::install("org.Mm.eg.db")
+BiocManager::install("pheatmap")
+
+# Load libraries
+library(tidyverse)
+library(tibble)
+library(BiocManager)
+library(AnnotationDbi)
+library(DESeq2)
+library(org.Mm.eg.db)
+library(pheatmap)
+```
+
+Next we will clean up the counts file
+
+```
+# Read featureCounts output
+raw_counts <- read.table("counts.txt", header = TRUE, comment.char = "#", stringsAsFactors = FALSE)
+
+# Keep Geneid + count columns, rename for clarity
+clean_counts <- raw_counts %>%
+  select(Geneid, starts_with("chow_rep"), starts_with("hfd_rep")) %>%
+  rename(
+    chow_rep1 = chow_rep1_rna_Aligned.sortedByCoord.out.bam,
+    chow_rep2 = chow_rep2_rna_Aligned.sortedByCoord.out.bam,
+    hfd_rep1 = hfd_rep1_rna_Aligned.sortedByCoord.out.bam,
+    hfd_rep2 = hfd_rep2_rna_Aligned.sortedByCoord.out.bam
+  )
+
+# Save cleaned table
+write.csv(clean_counts, "clean_counts.csv", row.names = FALSE)
+
+```
+
 
 ## VI. Analyzing Differentially Expressed Genes (DEGs)
 ```
