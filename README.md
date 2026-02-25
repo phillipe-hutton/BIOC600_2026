@@ -46,7 +46,7 @@ Note that the usage of Copilot, as with other AI tools, should be done with caut
 ![github-copilot-privacy-settings](https://github.com/user-attachments/assets/7f859dc9-6f87-4c44-9202-faa8d65fe753)
 ---
 
-Additionally, I advise that this tool should be used as an advanced "autocomplete" like when you text your friends: It's handy when it gives you the response that you're looking for—but it won't always give you the response that you actually want to use. So always check your scrips to make sure there's no errors in it.
+Additionally, I advise that this tool should be used as an advanced "autocomplete" like when you text your friends: It's handy when it gives you the response that you're looking for—but it won't always give you the response that you actually want to use. So always check your scripts to make sure there's no errors in it.
 
 Additionally, you should also download the [Integrative Genomics Viewer (IGV)](https://igv.org/doc/desktop/#DownloadPage/) application to be able to visualize the genomics datasets we will be analyzing.
 
