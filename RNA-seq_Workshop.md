@@ -431,7 +431,7 @@ featureCounts -T 4 \
 
 - `-T` number of threads for the command
 - `-p` specifies that input data is paired-end
-- `countReadPairs` specifies that read pairs will be counted instead of reads (should be included for paired-end data)
+- `--countReadPairs` specifies that read pairs will be counted instead of reads (should be included for paired-end data)
 - `-B` directs featureCounts to only count fragments with both end successfully aligned
 - `-C` directs featureCounts to **NOT** count chimeric fragments (fragments that have their two ends aligned to different chromosomes)
 - `-s` specifies that the data is unstranded (0), stranded (1), or reversely stranded (2)
